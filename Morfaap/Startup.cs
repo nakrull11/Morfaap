@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Morfaap.Models;
 
 namespace Morfaap
 {
     public class Startup
     {
+        private readonly IConfiguration configuration;  
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.configuration = configuration; 
         }
 
         public IConfiguration Configuration { get; }
@@ -33,28 +36,35 @@ namespace Morfaap
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddDbContext<DataContext>(
+                options => options.UseSqlServer(
+                    configuration["ConnectionStrings:DefaultConnection"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseCors(x => x
+                   .AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader());
+            // Uso de archivos estáticos (*.html, *.css, *.js, etc.)
+            app.UseStaticFiles();
+            // Permitir cookies
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.None,
+            });
+            // Habilitar autenticación
+            app.UseAuthentication();
+            // App en ambiente de desarrollo?
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();//página amarilla de errores
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-
             app.UseMvc(routes =>
             {
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
