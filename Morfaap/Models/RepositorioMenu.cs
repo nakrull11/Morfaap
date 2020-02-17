@@ -21,7 +21,7 @@ namespace Morfaap.Models
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string sql = $"INSERT INTO Menu (IdLocal)" +
-                            $"VALUES('{ob.Local.idPropietario}');";
+                            $"VALUES('{ob.IdLocal}');";
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {

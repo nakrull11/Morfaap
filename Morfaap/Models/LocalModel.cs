@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,7 +16,8 @@ namespace Morfaap.Models
         public decimal Lon { get; set; }
         public string Direccion { get; set; }
         public string NumCelular { get; set; }
-        public int idPropietario { get; set; }
+        public int IdPropietario { get; set; }
+        [ForeignKey("IdPropietario")]
         public UsuarioModel Propietario{ get; set; }
     }
 }

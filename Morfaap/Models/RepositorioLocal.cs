@@ -21,7 +21,7 @@ namespace Morfaap.Models
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string sql = $"INSERT INTO Local (Nombre,Lat,Lon,Direccion,NumCelular,IdPropietario)" +
-                            $"VALUES('{ob.Nombre}','{ob.Lat}','{ob.Lon}','{ob.Direccion}','{ob.NumCelular}','{ob.idPropietario}');";
+                            $"VALUES('{ob.Nombre}','{ob.Lat}','{ob.Lon}','{ob.Direccion}','{ob.NumCelular}','{ob.IdPropietario}');";
 
                 using (SqlCommand command = new SqlCommand(sql, connection))
                 {
@@ -30,7 +30,7 @@ namespace Morfaap.Models
                     res = command.ExecuteNonQuery();
                     command.CommandText = "SELECT SCOPE_IDENTITY()";
                     var id = command.ExecuteScalar();
-                    ob.idPropietario = Convert.ToInt32(id);
+                    ob.IdPropietario = Convert.ToInt32(id);
                     connection.Close();
                 }
             }
@@ -62,7 +62,7 @@ namespace Morfaap.Models
                           Lon= reader.GetDecimal(3),
                           Direccion = reader.GetString(4),
                           NumCelular = reader.GetString(5),
-                          idPropietario = reader.GetInt32(6),
+                          IdPropietario = reader.GetInt32(6),
                           Propietario = new UsuarioModel()
                           {
                              IdUsuario= reader.GetInt32(6),
@@ -116,7 +116,7 @@ namespace Morfaap.Models
                             Lon = reader.GetDecimal(3),
                             Direccion = reader.GetString(4),
                             NumCelular = reader.GetString(5),
-                            idPropietario = reader.GetInt32(6),
+                            IdPropietario = reader.GetInt32(6),
                             Propietario = new UsuarioModel()
                             {
                                 IdUsuario = reader.GetInt32(6),
@@ -159,7 +159,7 @@ namespace Morfaap.Models
                             Lon = reader.GetDecimal(3),
                             Direccion = reader.GetString(4),
                             NumCelular = reader.GetString(5),
-                            idPropietario = reader.GetInt32(6),
+                            IdPropietario = reader.GetInt32(6),
                             Propietario = new UsuarioModel()
                             {
                                 IdUsuario = reader.GetInt32(6),
