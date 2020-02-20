@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Morfaap.Models;
 
 namespace Morfaap.Api
@@ -14,10 +15,12 @@ namespace Morfaap.Api
     public class UsuarioModelsController : ControllerBase
     {
         private readonly DataContext _context;
+        private readonly IConfiguration config;
 
-        public UsuarioModelsController(DataContext context)
+        public UsuarioModelsController(DataContext context, IConfiguration config)
         {
             _context = context;
+            this.config = config;
         }
 
         // GET: api/UsuarioModels
@@ -43,7 +46,7 @@ namespace Morfaap.Api
 
         // PUT: api/UsuarioModels/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUsuarioModel(int id, UsuarioModel usuarioModel)
+        public async Task<IActionResult> Put(int id,UsuarioModel usuarioModel)
         {
             if (id != usuarioModel.IdUsuario)
             {
@@ -73,7 +76,7 @@ namespace Morfaap.Api
 
         // POST: api/UsuarioModels
         [HttpPost]
-        public async Task<ActionResult<UsuarioModel>> PostUsuarioModel(UsuarioModel usuarioModel)
+        public async Task<IActionResult> Post(UsuarioModel usuarioModel)
         {
             _context.Usuario.Add(usuarioModel);
             await _context.SaveChangesAsync();
