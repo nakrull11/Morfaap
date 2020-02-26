@@ -48,10 +48,10 @@ namespace Morfaap.Api
         }
 
         // GET: api/UsuarioModels/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UsuarioModel>> Get(int id)
+        [HttpGet("{email}")]
+        public async Task<ActionResult<UsuarioModel>> GetEmail(string email)
         {
-            var usuarioModel = await _context.Usuario.FindAsync(id);
+            var usuarioModel = _context.Usuario.FirstOrDefault(x => x.Email == email);
 
             if (usuarioModel == null)
             {
@@ -93,13 +93,33 @@ namespace Morfaap.Api
 
         // POST: api/UsuarioModels
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Post(UsuarioModel usuarioModel)
         {
-            _context.Usuario.Add(usuarioModel);
-            await _context.SaveChangesAsync();
+            try
+            {
 
-            return CreatedAtAction("GetUsuarioModel", new { id = usuarioModel.IdUsuario }, usuarioModel);
+                if (ModelState.IsValid)
+                {
+                    usuarioModel.Password = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                                                password: usuarioModel.Password,
+                                                salt: System.Text.Encoding.ASCII.GetBytes("SALADITA"),
+                                                prf: KeyDerivationPrf.HMACSHA1,
+                                                iterationCount: 1000,
+                                                numBytesRequested: 256 / 8));
+                    _context.Usuario.Add(usuarioModel);
+                    _context.SaveChanges();
+                    return CreatedAtAction(nameof(Get), new { id = usuarioModel.IdUsuario }, usuarioModel);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
+
+
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginView loginView)
@@ -107,14 +127,14 @@ namespace Morfaap.Api
             try
             {
 
-                //string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                  string password= loginView.Password;
-                  /*  salt: System.Text.Encoding.ASCII.GetBytes(config["Salt"]),
-                    prf: KeyDerivationPrf.HMACSHA1,
-                    iterationCount: 1000,
-                    numBytesRequested: 256 / 8));*/
+              string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                  password: loginView.Password,
+                  salt: System.Text.Encoding.ASCII.GetBytes(config["Salt"]),
+                  prf: KeyDerivationPrf.HMACSHA1,
+                  iterationCount: 1000,
+                  numBytesRequested: 256 / 8));
                 var p = _context.Usuario.FirstOrDefault(x => x.Email == loginView.Email);
-                if (p == null || p.Password != password)
+                if (p == null || p.Password != hashed)
                 {
                     return BadRequest("Nombre de usuario o clave incorrecta");
                 }
