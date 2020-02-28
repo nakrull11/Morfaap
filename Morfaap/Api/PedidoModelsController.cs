@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using Morfaap.Models;
 namespace Morfaap.Api
 {
     [Route("api/[controller]")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
     public class PedidoModelsController : ControllerBase
     {
@@ -38,6 +41,14 @@ namespace Morfaap.Api
                 return NotFound();
             }
 
+            return pedidoModel;
+        }
+
+
+        [HttpGet("ultimo")]
+        public async Task<ActionResult<PedidoModel>> Ultimo()
+        {
+            var pedidoModel = await _context.Pedido.LastAsync();
             return pedidoModel;
         }
 
@@ -73,7 +84,7 @@ namespace Morfaap.Api
 
         // POST: api/PedidoModels
         [HttpPost]
-        public async Task<ActionResult<PedidoModel>> PostPedidoModel(PedidoModel pedidoModel)
+        public async Task<IActionResult> PostPedidoModel(PedidoModel pedidoModel)
         {
             _context.Pedido.Add(pedidoModel);
             await _context.SaveChangesAsync();

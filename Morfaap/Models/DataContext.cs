@@ -15,6 +15,7 @@ namespace Morfaap.Models
 
         public DbSet<UsuarioModel> Usuario { get; set; }
         public DbSet<PedidoModel> Pedido { get; set; }
+        public DbSet<DetalleModel> Detalle { get; set; }
         public DbSet<PlatoModel> Plato { get; set; }
         public DbSet<LocalModel> Local { get; set; }
         public DbSet<MenuModel> Menu { get; set; }
@@ -24,7 +25,7 @@ namespace Morfaap.Models
             modelBuilder.Entity<ComentarioModel>()
                 .HasKey(o => new { o.IdUsuario, o.IdLocal });
         }
-        public DbSet<DetalleModel> Detalle { get; set; }
+      
 
 
 
